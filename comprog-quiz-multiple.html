@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Page</title>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>Quiz Page</h1>
+
+    <div class="container">
+        <div id="question" class="question"></div>
+        <p id="question-text"></p>
+        <form id="quiz-form">
+            <div id="choices" class="choices">
+                <!-- Choices will be added here dynamically -->
+            </div>
+            <input type="submit" id="submit-button" class="submit-button" value="Submit Answer">
+        </form>
+        <button id="show-correct-button" class="submit-button" onclick="showCorrectAnswer()">Show Correct Answer</button>
+        <button id="review-previous-button" class="submit-button" onclick="reviewPrevious()">Review Previous</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script type="text/javascript">
+        const questions = [
+        {
+        question: "One of the named pieces of data that make up a structure.",
+        choices: ["Instance variable", "Data element", "Data member", "Data unit"],
+        correctIndex: 0
+    },
+    {
+        question: "A value that indicates or refers to a variable or structure. In a state diagram, a reference appears as an arrow.",
+        choices: ["Pointer", "Indicator", "Reference", "Link"],
+        correctIndex: 2
+    },
+    {
+        question: "A method of parameter-passing in which the value provided as an argument is copied into the corresponding parameter, but the parameter and the argument occupy distinct locations.",
+        choices: ["Call by value", "Pass by copy", "Copy parameter", "Pass by value"],
+        correctIndex: 3
+    },
+    {
+        question: "A method of parameter-passing in which the parameter is a reference to the argument variable. Changes to the parameter also affect the argument variable.",
+        choices: ["Call by reference", "Pass by reference", "Reference parameter", "Argument sharing"],
+        correctIndex: 1
+    },
+    {
+        question: "A function that operates on an object that is passed as an implicit parameter named this.",
+        choices: ["Implicit function", "Operational function", "Object function", "Member function"],
+        correctIndex: 3
+    },
+    {
+        question: "A function that is not a member of any structure definition. Also called a 'free-standing' function.",
+        choices: ["Standalone function", "Isolated function", "Independent function", "Nonmember function"],
+        correctIndex: 3
+    },
+    {
+        question: "To call a function 'on' an object, in order to pass the object as an implicit parameter.",
+        choices: ["Activate", "Invoke", "Execute", "Trigger"],
+        correctIndex: 1
+    },
+    {
+        question: "The object on which a member function is invoked. Inside the member function, we can refer to the current object implicitly, or by using the keyword this.",
+        choices: ["Current instance", "Active object", "Current object", "Instance reference"],
+        correctIndex: 2
+    },
+    {
+        question: "A keyword that refers to the current object. this is a pointer, which makes it difficult to use, since we do not cover pointers in this book.",
+        choices: ["Current", "Here", "Self", "This"],
+        correctIndex: 3
+    },
+    {
+        question: "A description of how a function is used, including the number and types of the parameters and the type of the return value.",
+        choices: ["Usage description", "Method signature", "Function contract", "Interface"],
+        correctIndex: 3
+    },
+    {
+        question: "A statement that declares the interface to a function without providing the body. Declarations of member functions appear inside structure definitions even if the definitions appear outside.",
+        choices: ["Function prototype", "Function header", "Function signature", "Function declaration"],
+        correctIndex: 3
+    },
+    {
+        question: "The body of a function, or the details of how a function works.",
+        choices: ["Function code", "Function logic", "Function body", "Implementation"],
+        correctIndex: 3
+    },
+    {
+        question: "A special function that initializes the instance variables of a newly-created object.",
+        choices: ["Initializer", "Constructor", "Object setup", "Instance creator"],
+        correctIndex: 1
+    },
+    {
+        question: "In general use, a class is a user-defined type with member functions. In C++, a class is a structure with private instance variables.",
+        choices: ["Data structure", "User type", "Class type", "Class"],
+        correctIndex: 3
+    },
+    {
+        question: "A function that provides access (read or write) to a private instance variable.",
+        choices: ["Modifier function", "Accessor function", "Variable function", "Member function"],
+        correctIndex: 1
+    },
+    {
+        question: "A condition, usually pertaining to an object, that should be true at all times in client code, and that should be maintained by all member functions.",
+        choices: ["Constant condition", "Steady-state", "Invariant", "Consistency"],
+        correctIndex: 2
+    },
+    {
+        question: "A condition that is assumed to be true at the beginning of a function. If the precondition is not true, the function may not work. It is often a good idea for functions to check their preconditions, if possible.",
+        choices: ["Initial condition", "Starting point", "Function condition", "Precondition"],
+        correctIndex: 3
+    },
+    {
+        question: "A condition that is true at the end of a function.",
+        choices: ["Final state", "Post-requisite", "End condition", "Postcondition"],
+        correctIndex: 3
+    },
+
+    {
+        question: "One of the values on which an operator operates.",
+        choices: ["Operator value", "Operand", "Operative", "Value factor"],
+        correctIndex: 1
+    },
+    {
+        question: "The order in which operations are evaluated.",
+        choices: ["Sequence", "Ordering", "Execution order", "Precedence"],
+        correctIndex: 3
+    },
+    {
+        question: "The ability to combine simple expressions and statements into compound statements and expressions to represent complex computations concisely.",
+        choices: ["Complexification", "Integration", "Composition", "Aggregation"],
+        correctIndex: 2
+    },
+    {
+        question: "A type of variable (or value) that can contain fractions as well as integers. In C++, the one used in this book is double.",
+        choices: ["Integer", "Decimal", "Fractional", "Floating-point"],
+        correctIndex: 3
+    },
+    {
+        question: "A statement that declares a new variable and assigns a value to it at the same time.",
+        choices: ["Declaration", "Assignment", "Initialization", "Variable setup"],
+        correctIndex: 2
+    },
+    {
+        question: "A named sequence of statements that performs some useful function. Functions may or may not take parameters and may or may not produce a result.",
+        choices: ["Procedure", "Routine", "Method", "Function"],
+        correctIndex: 3
+    },
+    {
+        question: "A piece of information you provide in order to call a function. Parameters are similar to variables in that they contain values and have types.",
+        choices: ["Argument", "Input", "Parameter", "Argument value"],
+        correctIndex: 2
+    },
+    {
+        question: "A value that you provide when you call a function. This value must have the same type as the corresponding parameter.",
+        choices: ["Caller", "Value parameter", "Argument", "Function value"],
+        correctIndex: 2
+    },
+    {
+        question: "To cause a function to be executed.",
+        choices: ["Invoke", "Run", "Execute", "Trigger"],
+        correctIndex: 0
+    },
+    {
+        question: "An operator that works on integers and yields the remainder when one number is divided by another. In C++, it is denoted with a percent sign (%).",
+        choices: ["Modulo", "Division operator", "Remainder", "Modulus"],
+        correctIndex: 3
+    },
+    {
+        question: "A block of statements that may or may not be executed depending on some condition.",
+        choices: ["Conditional", "Decision", "Branch", "Conditional block"],
+        correctIndex: 0
+    },
+    {
+        question: "A way of joining several conditional statements in sequence.",
+        choices: ["Chaining", "Conjunction", "Sequence", "Linking"],
+        correctIndex: 0
+    },
+    {
+        question: "Putting a conditional statement inside one or both branches of another conditional statement.",
+        choices: ["Embedding", "Enveloping", "Nesting", "Enclosing"],
+        correctIndex: 2
+    },
+    {
+        question: "The process of calling the same function you are currently executing.",
+        choices: ["Repeat call", "Reiteration", "Recursive call", "Recursion"],
+        correctIndex: 3
+    },
+    {
+        question: "A function that calls itself recursively without ever reaching the base case. Eventually, infinite recursion will cause a run-time error.",
+        choices: ["Endless loop", "Unbounded recursion", "Infinite loop", "Infinite recursion"],
+        correctIndex: 3
+    },
+    {
+        question: "The type of value a function returns.",
+        choices: ["Function type", "Return type", "Result type", "Output type"],
+        correctIndex: 1
+    },
+    {
+        question: "The value provided as the result of a function call.",
+        choices: ["Result", "Function output", "Return value", "Call result"],
+        correctIndex: 2
+    },
+    {
+        question: "Part of a program that can never be executed, often because it appears after a return statement.",
+        choices: ["Dead zone", "Unused code", "Dead code", "Inactive section"],
+        correctIndex: 2
+    },
+    {
+        question: "Code that is used during program development but is not part of the final version.",
+        choices: ["Development code", "Scaffolding", "Draft code", "Work-in-progress"],
+        correctIndex: 1
+    },
+    {
+        question: "A special return type that indicates a void function; that is, one that does not return a value.",
+        choices: ["No return", "Empty return", "Null result", "Void"],
+        correctIndex: 3
+    },
+    {
+        question: "Having more than one function with the same name but different parameters. When you call an overloaded function, C++ knows which version to use by looking at the arguments you provide.",
+        choices: ["Overuse", "Multifunction", "Function set", "Overloading"],
+        correctIndex: 3
+    },
+    {
+        question: "A value or variable that can take on one of two states, often called true and false. In C++, boolean values can be stored in a variable type called bool.",
+        choices: ["Binary", "Dual-state", "Boolean", "Bitwise"],
+        correctIndex: 2
+    },
+    {
+        question: "A variable (usually type bool) that records a condition or status information.",
+        choices: ["Status variable", "Flag", "Condition recorder", "Status flag"],
+        correctIndex: 1
+    },
+    {
+        question: "An operator that compares two values and produces a boolean that indicates the relationship between the operands.",
+        choices: ["Comparison tool", "Comparison operator", "Relational operator", "Boolean operator"],
+        correctIndex: 1
+    },
+    {
+        question: "An operator that combines boolean values in order to test compound conditions.",
+        choices: ["Logical connector", "Compound operator", "Logic operator", "Logical operator"],
+        correctIndex: 3
+    },
+    {
+        question: "A statement that executes repeatedly while a condition is true or until some condition is satisfied.",
+        choices: ["Recursion", "Iteration", "Loop", "Reiteration"],
+        correctIndex: 2
+    },
+    {
+        question: "A loop whose condition is always true.",
+        choices: ["Continuous loop", "Eternal loop", "Infinite loop", "Endless loop"],
+        correctIndex: 2
+    },
+    {
+        question: "The statements inside the loop.",
+        choices: ["Body", "Content", "Interior", "Loop section"],
+        correctIndex: 0
+    },
+    {
+        question: "One pass through (execution of) the body of the loop, including the evaluation of the condition.",
+        choices: ["Round", "Cycle", "Iteration", "Loop execution"],
+        correctIndex: 2
+    },
+    {
+        question: "A special character, written as \\t in C++, that causes the cursor to move to the next tab stop on the current line.",
+        choices: ["Tab character", "Tabulator", "Tab key", "Tab"],
+        correctIndex: 3
+    },
+    {
+        question: "To divide a large complex program into components (like functions) and isolate the components from each other (for example, by using local variables.",
+        choices: ["Segmentation", "Partition", "Division", "Encapsulation"],
+        correctIndex: 3
+    },
+    {
+        question: "A variable that is declared inside a function and exists only within that function. Local variables cannot be accessed from outside their home function and do not interfere with any other functions.",
+        choices: ["Private variable", "Restricted variable", "Function variable", "Local variable"],
+        correctIndex: 3
+    },
+    {
+        question: "To replace something unnecessarily specific (like a constant value) with something appropriately general (like a variable or parameter). Generalization makes code more versatile, more likely to be reused, and sometimes even easier to write.",
+        choices: ["Refinement", "Specialization", "Simplification", "Generalization"],
+        correctIndex: 3
+    },
+    {
+        question: "A process for developing a program. In this chapter, a style of development is demonstrated based on developing code to do simple, specific things and then encapsulating and generalizing.",
+        choices: ["Programming strategy", "Code development", "Design process", "Development plan"],
+        correctIndex: 3
+    },
+    {
+        question: "A collection of related data that comes with a set of functions that operate on it. The objects we have used so far are the cout object provided by the system, and strings.",
+        choices: ["Data structure", "Data collection", "Compound data", "Object"],
+        correctIndex: 3
+    },
+    {
+        question: "A variable or value used to select one of the members of an ordered set, like a character from a string.",
+        choices: ["Selector", "Picker", "Extractor", "Index"],
+        correctIndex: 3
+    },
+    {
+        question: "To iterate through all the elements of a set performing a similar operation on each.",
+        choices: ["Scan", "Traverse", "Navigate", "Browse"],
+        correctIndex: 1
+    },
+    {
+        question: "A variable used to count something, usually initialized to zero and then incremented.",
+        choices: ["Tally", "Counter", "Recorder", "Meter"],
+        correctIndex: 1
+    },
+    {
+        question: "Increase the value of a variable by one. The increment operator in C++ is ++.",
+        choices: ["Raise", "Add", "Augment", "Increment"],
+        correctIndex: 3
+    },
+    {
+        question: "Decrease the value of a variable by one. The decrement operator in C++ is --.",
+        choices: ["Reduce", "Subtract", "Diminish", "Decrement"],
+        correctIndex: 3
+    },
+    {
+        question: "To join two operands end-to-end.",
+        choices: ["Connect", "Link", "Concatenate", "Combine"],
+        correctIndex: 2
+    },
+    {
+        question: "A collection of data grouped together and treated as a single object.",
+        choices: ["Data set", "Group", "Bundle", "Structure"],
+        correctIndex: 3
+    },
+{
+        question: "One of the named pieces of data that make up a structure.",
+        choices: ["Data element", "Instance variable", "Structural unit", "Component"],
+        correctIndex: 1
+    },
+    {
+        question: "A value that indicates or refers to a variable or structure. In a state diagram, a reference appears as an arrow.",
+        choices: ["Pointer", "Link", "Reference", "Indicator"],
+        correctIndex: 2
+    },
+
+    {
+        question: "A condition that is true at the end of a function.",
+        choices: ["Final condition", "End state", "Postcondition", "Completion status"],
+        correctIndex: 2
+    },
+    {
+        question: "The process of formulating a problem, finding a solution, and expressing the solution.",
+        choices: ["Problem-solving", "Solution development", "Task execution", "Problem expression"],
+        correctIndex: 0
+    },
+    {
+        question: "A programming language like C++ that is designed to be easy for humans to read and write.",
+        choices: ["User-friendly language", "Human-readable language", "High-level language", "Intuitive language"],
+        correctIndex: 2
+    },
+    {
+        question: "A programming language that is designed to be easy for a computer to execute. Also called 'machine language' or 'assembly language.'",
+        choices: ["Low-level language", "Machine-readable language", "Computer-friendly language", "High-level language"],
+        correctIndex: 0
+    },
+    {
+        question: "A property of a program that can run on more than one kind of computer.",
+        choices: ["Multi-functionality", "Versatility", "Portability", "Adaptability"],
+        correctIndex: 2
+    },
+    {
+        question: "Any of the languages people have designed for specific purposes, like representing mathematical ideas or computer programs. All programming languages are formal languages.",
+        choices: ["Mathematical languages", "Specialized languages", "Formal languages", "Technical languages"],
+        correctIndex: 2
+    },
+    {
+        question: "Any of the languages people speak that have evolved naturally.",
+        choices: ["Human languages", "Evolved languages", "Informal languages", "Natural language"],
+        correctIndex: 3
+    },
+    {
+        question: "To execute a program in a high-level language by translating it one line at a time.",
+        choices: ["Execute", "Translate", "Interpret", "Process"],
+        correctIndex: 2
+    },
+    {
+        question: "To translate a program in a high-level language into a low-level language, all at once, in preparation for later execution.",
+        choices: ["Compile", "Interpret", "Translate", "Execute"],
+        correctIndex: 0
+    },
+    {
+        question: "A program in a high-level language, before being compiled.",
+        choices: ["Source code", "Original code", "High-level code", "Pre-compiled code"],
+        correctIndex: 0
+    },
+    {
+        question: "The output of the compiler, after translating the program.",
+        choices: ["Compiler code", "Binary code", "Executable code", "Object code"],
+        correctIndex: 3
+    },
+    {
+        question: "Another name for object code that is ready to be executed.",
+        choices: ["Runnable code", "Execution code", "Executable", "Executable object code"],
+        correctIndex: 2
+    },
+    {
+        question: "A general process for solving a category of problems.",
+        choices: ["Problem-solving process", "Algorithm", "Solution process", "Problem-solving algorithm"],
+        correctIndex: 1
+    },
+    {
+        question: "An error in a program.",
+        choices: ["Glitch", "Mistake", "Bug", "Flaw"],
+        correctIndex: 2
+    },
+    {
+        question: "The structure of a program.",
+        choices: ["Architecture", "Design", "Framework", "Syntax"],
+        correctIndex: 3
+    },
+    {
+        question: "The meaning of a program.",
+        choices: ["Understanding", "Comprehension", "Semantics", "Interpretation"],
+        correctIndex: 2
+    },
+    {
+        question: "To examine a program and analyze the syntactic structure.",
+        choices: ["Inspect", "Review", "Analyze", "Parse"],
+        correctIndex: 3
+    },
+    {
+        question: "An error in a program that makes it impossible to parse (and therefore impossible to compile).",
+        choices: ["Parsing error", "Syntax issue", "Parse error", "Syntax error"],
+        correctIndex: 3
+    },
+    {
+        question: "An error in a program that makes it fail at run-time.",
+        choices: ["Execution error", "Runtime fault", "Run-time error", "Runtime error"],
+        correctIndex: 2
+    },
+    {
+        question: "An error in a program that makes it do something other than what the programmer intended.",
+        choices: ["Program flaw", "Programming error", "Logic issue", "Logical error"],
+        correctIndex: 3
+    },
+    {
+        question: "The process of finding and removing any of the three kinds of errors.",
+        choices: ["Error elimination", "Defect removal", "Debugging", "Error fixing"],
+        correctIndex: 2
+    },
+    {
+        question: "A named storage location for values. All variables have a type, which determines which values it can store.",
+        choices: ["Memory", "Storage unit", "Data container", "Variable"],
+        correctIndex: 3
+    },
+    {
+        question: "A letter, number, or other thing that can be stored in a variable.",
+        choices: ["Symbol", "Character", "Digit", "Value"],
+        correctIndex: 3
+    },
+    {
+        question: "A set of values. The types we have seen are integers (int in C++) and characters (char in C++).",
+        choices: ["Value set", "Data type", "Value range", "Type"],
+        correctIndex: 1
+    },
+    {
+        question: "A reserved word that is used by the compiler to parse programs. Examples we have seen include int, void, and endl.",
+        choices: ["Special word", "Compiler directive", "Reserved keyword", "Keyword"],
+        correctIndex: 3
+    },
+    {
+        question: "A line of code that represents a command or action. The statements we have seen are declarations, assignments, and output statements.",
+        choices: ["Command line", "Code line", "Instruction line", "Statement"],
+        correctIndex: 3
+    },
+    {
+        question: "A statement that creates a new variable and determines its type.",
+        choices: ["Variable declaration", "Type assignment", "Data allocation", "Declaration"],
+        correctIndex: 0
+    },
+    {
+        question: "A statement that assigns a value to a variable.",
+        choices: ["Value assignment", "Data setting", "Variable initialization", "Assignment"],
+        correctIndex: 3
+    },
+    {
+        question: "A combination of variables, operators, and values that represents a single result value. Expressions also have types determined by their operators and operands.",
+        choices: ["Computation", "Value combination", "Expression", "Mathematical expression"],
+        correctIndex: 2
+    },
+    {
+        question: "A special symbol that represents a simple computation like addition or multiplication.",
+        choices: ["Function symbol", "Computation sign", "Mathematical operator", "Operator"],
+        correctIndex: 3
+    },
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+
+        const questionElement = document.getElementById("question");
+        const questionTextElement = document.getElementById("question-text");
+        const quizForm = document.getElementById("quiz-form");
+        const choicesElement = document.getElementById("choices");
+        const resultElement = document.getElementById("result");
+
+        function displayQuestion() {
+            if (currentIndex < questions.length) {
+                questionElement.textContent = `Question ${currentIndex + 1}:`;
+                questionTextElement.textContent = questions[currentIndex].question;
+                choicesElement.innerHTML = "";
+
+                questions[currentIndex].choices.forEach((choice, index) => {
+                    const choiceLabel = document.createElement("label");
+                    const choiceInput = document.createElement("input");
+                    choiceInput.type = "radio";
+                    choiceInput.name = "answer";
+                    choiceInput.value = index;
+                    choiceLabel.appendChild(choiceInput);
+                    choiceLabel.appendChild(document.createTextNode(choice));
+                    choicesElement.appendChild(choiceLabel);
+                });
+            } else {
+                showResult();
+            }
+        }
+
+        quizForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (selectedAnswer) {
+                const selectedIndex = parseInt(selectedAnswer.value);
+                checkAnswer(selectedIndex);
+            }
+            // Proceed to the next question regardless of the answer
+            currentIndex++;
+            displayQuestion();
+        });
+
+        function checkAnswer(selectedIndex) {
+            const correctAnswer = questions[currentIndex].correctIndex;
+            if (selectedIndex === correctAnswer) {
+                resultElement.textContent = "Your answer is correct!";
+                score++;
+            } else {
+                resultElement.innerHTML = `Your answer is incorrect. Correct answer: ${questions[currentIndex].choices[correctAnswer]}`;
+            }
+        }
+
+        function showCorrectAnswer() {
+            const correctAnswer = questions[currentIndex].correctIndex;
+            resultElement.innerHTML = `Correct answer: ${questions[currentIndex].choices[correctAnswer]}`;
+        }
+
+        function reviewPrevious() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showResult() {
+            questionElement.textContent = "Quiz Completed!";
+            questionTextElement.textContent = "";
+            choicesElement.innerHTML = "";
+            resultElement.textContent = `Your Score: ${score} out of ${questions.length}`;
+        }
+
+        displayQuestion();
+    </script>
+</body>
+</html>
