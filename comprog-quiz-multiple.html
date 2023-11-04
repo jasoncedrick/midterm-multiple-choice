@@ -499,6 +499,17 @@
         const choicesElement = document.getElementById("choices");
         const resultElement = document.getElementById("result");
 
+        // Add a shuffle function to randomize the questions array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+     }
+
+        shuffleArray(questions);
+        displayQuestion();
+        
         function displayQuestion() {
             if (currentIndex < questions.length) {
                 questionElement.textContent = `Question ${currentIndex + 1}:`;
